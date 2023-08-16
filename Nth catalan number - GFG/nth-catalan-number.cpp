@@ -15,7 +15,7 @@ class Solution
         for(int i=2;i<=n;i++){
             dp[i]=0;
             for(int j=0;j<i;j++){
-                dp[i]=((dp[i]%M)+(dp[j]*dp[i-j-1])%M)%M;
+                dp[i]+=(dp[j]*dp[i-j-1])%M;
             }
             dp[i]=dp[i]%M;
         }
