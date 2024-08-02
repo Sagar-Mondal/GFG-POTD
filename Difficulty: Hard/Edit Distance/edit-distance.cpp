@@ -2,29 +2,33 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+
 // } Driver Code Ends
 class Solution {
   public:
-    int editDistance(string word1, string word2) {
-        int m = word1.size(), n = word2.size(), pre;
-        vector<int> cur(n + 1, 0);
-        for (int j = 1; j <= n; j++) {
-            cur[j] = j;
+    int ans(string &str1,string&str2,int n,int m,vector<vector<int>>&v)
+    {
+        if(n==-1)
+        return m+1;
+        if(m==-1)
+        return n+1;
+        if(v[n][m]!=INT_MAX)
+        return v[n][m];
+        if(str1[n]==str2[m])
+        {
+            return v[n][m]=min(v[n][m],ans(str1,str2,n-1,m-1,v));
         }
-        for (int i = 1; i <= m; i++) {
-            pre = cur[0];
-            cur[0] = i;
-            for (int j = 1; j <= n; j++) {
-                int temp = cur[j];
-                if (word1[i - 1] == word2[j - 1]) {
-                    cur[j] = pre;
-                } else {
-                    cur[j] = min(pre, min(cur[j - 1], cur[j])) + 1;
-                }
-                pre = temp;
-            }
-        }
-        return cur[n];
+        v[n][m]=min(v[n][m],1+ans(str1,str2,n-1,m-1,v));
+        v[n][m]=min(v[n][m],1+ans(str1,str2,n-1,m,v));
+        v[n][m]=min(v[n][m],1+ans(str1,str2,n,m-1,v));
+        return v[n][m];
+        
+    }
+    int editDistance(string str1, string str2) {
+        // Code here
+        int n=str1.length(),m=str2.length();
+        vector<vector<int>>v(n,vector<int>(m,INT_MAX));
+        return ans(str1,str2,n-1,m-1,v);
     }
 };
 
