@@ -94,74 +94,33 @@ struct Node {
 */
 class Solution {
   public:
-    // Function to return a list of integers denoting the node
-    // values of both the BST in a sorted order.
-    vector<int> merge(Node* root1, Node* root2) {
-        Node* head1 = nullptr;
-        Node* head2 = nullptr;
-        
-        convertIntoSortedDLL(root1, &head1);
-        convertIntoSortedDLL(root2, &head2);
-        
-        Node* res = mergeLinkedList(head1, head2);
-        
-        vector<int> result;
-        while (res != nullptr) {
-            result.push_back(res->data);
-            res = res->right;
-        }
-        
-        return result;
-    }
-    void convertIntoSortedDLL(Node* root, Node** head) {
-        if (root == nullptr) {
-            return;
-        }
- 
-        convertIntoSortedDLL(root->right, head);
-        root->right = *head;
- 
-        if (*head != nullptr) {
-            (*head)->left = root;
-        }
- 
-        *head = root;
- 
-        convertIntoSortedDLL(root->left, head);
-    }
-    Node* mergeLinkedList(Node* head1, Node* head2) {
-        Node* dummy = new Node(0);
-        Node* tail = dummy;
- 
-        while (true) {
-            if (head1 == nullptr) {
-                tail->right = head2;
-                break;
+    vector<int> merge(Node *root1, Node *root2) {
+        vector<int> res;
+        stack<Node*> s1, s2;
+        while (root1 || root2 || !s1.empty() || !s2.empty()) {
+            while (root1) {
+                s1.push(root1);
+                root1 = root1->left;
             }
- 
-            if (head2 == nullptr) {
-                tail->right = head1;
-                break;
+            while (root2) {
+                s2.push(root2);
+                root2 = root2->left;
             }
- 
-            if (head1->data <= head2->data) {
-                tail->right = head1;
-                head1->left = tail;
-                head1 = head1->right;
-            } else {
-                tail->right = head2;
-                head2->left = tail;
-                head2 = head2->right;
+            if (s2.empty()
+                || (!s1.empty()
+                    && s1.top()->data <= s2.top()->data)) {
+                root1 = s1.top();
+                s1.pop();
+                res.push_back(root1->data);
+                root1 = root1->right;
             }
- 
-            tail = tail->right;
+            else {
+                root2 = s2.top();
+                s2.pop();
+                res.push_back(root2->data);
+                root2 = root2->right;
+            }
         }
-        Node* res = dummy->right;
-        if (res != nullptr) {
-            res->left = nullptr;
-        }
-        
-        delete dummy;
         return res;
     }
 };
