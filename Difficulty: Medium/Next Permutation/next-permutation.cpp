@@ -1,55 +1,57 @@
 //{ Driver Code Starts
-// Initial Template for C++
-
 #include <bits/stdc++.h>
 using namespace std;
+
 
 // } Driver Code Ends
 // User function Template for C++
 
-class Solution{
-public:
-    vector<int> nextPermutation(int N, vector<int> arr){
-        int ind = - 1;
-        for(int i = N - 2; i >= 0; i--){
-            if(arr[i] < arr[i + 1]){
+class Solution {
+  public:
+    void nextPermutation(vector<int>& arr) {
+        int N = arr.size();
+        int ind = 0;
+        for (int i = N - 2; i >= 0; i--) {
+            if (arr[i] < arr[i + 1]) {
                 ind = i;
                 break;
             }
         }
-        if(ind == - 1){
-            reverse(arr.begin(), arr.end());
-            return arr;
-        }
-        for(int i = N - 1; i > ind; i--){
-            if(arr[i] > arr[ind]){
+        for (int i = N - 1; i > ind; i--) {
+            if (arr[i] > arr[ind]) {
                 swap(arr[i], arr[ind]);
+                ind++;
                 break;
             }
         }
-        reverse(arr.begin() + ind + 1, arr.end());
-        return arr;
+        for (int i = 0; i < (N - ind) / 2; i++)
+            swap(arr[i + ind], arr[N - i - 1]);
     }
 };
 
 //{ Driver Code Starts.
-
-int main(){
+int main() {
     int t;
-    cin>>t;
-    while(t--){
-        int N;
-        cin>>N;
-        vector<int> arr(N);
-        for(int i = 0;i < N;i++)
-            cin>>arr[i];
-        
+    cin >> t;
+    cin.ignore();
+    while (t--) {
+        vector<int> arr;
+        string input;
+        getline(cin, input);
+        stringstream ss(input);
+        int number;
+        while (ss >> number) {
+            arr.push_back(number);
+        }
         Solution ob;
-        vector<int> ans = ob.nextPermutation(N, arr);
-        for(int u: ans)
-            cout<<u<<" ";
-        cout<<"\n";
+        int n = arr.size();
+        ob.nextPermutation(arr);
+        for (int i = 0; i < n; i++) {
+            cout << arr[i] << " ";
+        }
+        cout << "\n";
     }
     return 0;
 }
+
 // } Driver Code Ends
