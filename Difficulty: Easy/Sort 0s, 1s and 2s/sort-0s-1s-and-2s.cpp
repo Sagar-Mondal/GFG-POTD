@@ -7,16 +7,16 @@ using namespace std;
 class Solution {
   public:
     void sort012(vector<int>& arr) {
-        vector<int>freq(3,0);
-        for(int i=0;i<arr.size();i++)
-        freq[arr[i]]++;
-        int idx=0;
-        for(int i=0;i<3;i++){
-            int num=freq[i];
-            for(int j=0;j<num;j++)
-            arr[idx++]=i;
+        int n = arr.size();
+        int low = 0, high = n - 1, mid = 0;
+        while (mid <= high) {
+            if (arr[mid] == 0)
+                swap(arr[mid++], arr[low++]);
+            else if (arr[mid] == 1)
+                mid++;
+            else
+                swap(arr[mid], arr[high--]);
         }
-        
     }
 };
 
@@ -46,6 +46,7 @@ int main() {
         }
 
         cout << endl;
+        cout << "~" << endl;
     }
     return 0;
 }
