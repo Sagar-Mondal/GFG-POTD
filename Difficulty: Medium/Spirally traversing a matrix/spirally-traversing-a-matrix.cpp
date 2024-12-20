@@ -6,35 +6,39 @@ using namespace std;
 // } Driver Code Ends
 class Solution {
   public:
-    vector<int> spirallyTraverse(vector<vector<int> > &matrix) {
-        int row = matrix.size();
-        int col = matrix[0].size();
-        vector<int> res;
-        int left = 0, right = col - 1;
-        int top = 0, bottom = row - 1;
-        while(left <= right && top <= bottom){
-            for(int i = left; i <= right; i++){
-                res.push_back(matrix[top][i]);
+    vector<int> spirallyTraverse(vector<vector<int> > &mat) {
+        int r = mat.size();
+        int c = mat[0].size();
+        int row = 0;
+        int col = 0;
+        vector<int> output;
+
+        while (row < r && col < c) {
+            // storing the elements of 1st row from the remaining rows, in a list.
+            for (int i = col; i < c; i++)
+                output.push_back(mat[row][i]);
+            row++;
+
+            // storing elements of last column from remaining columns, in list.
+            for (int i = row; i < r; i++)
+                output.push_back(mat[i][c - 1]);
+            c--;
+
+            // storing the elements of last row from remaining rows, in a list.
+            if (row < r) {
+                for (int i = c - 1; i >= col; --i)
+                    output.push_back(mat[r - 1][i]);
+                r--;
             }
-            top++;
-            for(int i = top; i <= bottom; i++){
-                res.push_back(matrix[i][right]);
-            }
-            right--;
-            if(top <= bottom){
-                for(int i = right; i >= left; i--){
-                    res.push_back(matrix[bottom][i]);
-                }
-                bottom--;
-            }
-            if(left <= right){
-                for(int i = bottom; i >= top; i--){
-                    res.push_back(matrix[i][left]);
-                }
-                left++;
+            // storing elements of 1st column from the remaining columns, in list.
+            if (col < c) {
+                for (int i = r - 1; i >= row; --i)
+                    output.push_back(mat[i][col]);
+                col++;
             }
         }
-        return res;
+        // returning the list.
+        return output;
     }
 };
 
@@ -46,9 +50,10 @@ int main() {
     while (t--) {
         int r, c;
         cin >> r >> c;
-        vector<vector<int>> matrix(r, vector<int>(c, 0));
+        vector<vector<int>> matrix(r);
 
         for (int i = 0; i < r; i++) {
+            matrix[i].assign(c, 0);
             for (int j = 0; j < c; j++) {
                 cin >> matrix[i][j];
             }
@@ -59,6 +64,9 @@ int main() {
         for (int i = 0; i < result.size(); ++i)
             cout << result[i] << " ";
         cout << endl;
+
+        cout << "~"
+             << "\n";
     }
     return 0;
 }
