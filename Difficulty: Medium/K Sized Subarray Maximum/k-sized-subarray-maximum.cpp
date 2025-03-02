@@ -1,64 +1,95 @@
 //{ Driver Code Starts
-// Initial Template for C++
 #include <bits/stdc++.h>
 using namespace std;
 
 
 // } Driver Code Ends
-// User function template for C++
 
 class Solution {
   public:
-    std::vector<int> max_of_subarrays(int k, const std::vector<int>& arr) {
-        int n = arr.size();
-        std::vector<int> res;
-        std::deque<int> dq;
-        int i = 0;
-        for (i = 0; i < k; i++) {
-            while (!dq.empty() && arr[i] >= arr[dq.back()])
+    vector<int> maxOfSubarrays(const vector<int>& arr, int k) {
+
+        // to store the results
+        vector<int> res;
+
+        // create deque to store max values
+        deque<int> dq(k);
+
+        // Process first k (or first window) elements of array
+        for (int i = 0; i < k; ++i) {
+
+            // For every element, the previous smaller elements
+            // are useless so remove them from dq
+            while (!dq.empty() && arr[i] >= arr[dq.back()]) {
+
+                // Remove from rear
                 dq.pop_back();
+            }
+
+            // Add new element at rear of queue
             dq.push_back(i);
         }
-        for (; i < n; i++) {
+        // Process rest of the elements, i.e., from arr[k] to arr[n-1]
+        for (int i = k; i < arr.size(); ++i) {
+
+            // The element at the front of the queue is the largest
+            // element of previous window, so store it
             res.push_back(arr[dq.front()]);
-            while (!dq.empty() && dq.front() <= i - k)
+
+            // Remove the elements which are out of this window
+            while (!dq.empty() && dq.front() <= i - k) {
+
+                // Remove from front of queue
                 dq.pop_front();
-            while (!dq.empty() && arr[i] >= arr[dq.back()])
+            }
+
+            // Remove all elements smaller than the currently being
+            // added element (remove useless elements)
+            while (!dq.empty() && arr[i] >= arr[dq.back()]) {
                 dq.pop_back();
+            }
+
+            // Add current element at the rear of dq
             dq.push_back(i);
         }
+
+        // store the maximum element of last window
         res.push_back(arr[dq.front()]);
-        dq.pop_front();
+
         return res;
     }
 };
 
+
 //{ Driver Code Starts.
 
 int main() {
-
     int t;
     cin >> t;
-    cin.ignore();
+    cin.ignore(); // Ignore newline character after t
 
     while (t--) {
-
-        string ks;
-        getline(cin, ks);
-        int k = stoi(ks);
         vector<int> arr;
-        string input;
-        getline(cin, input);
-        stringstream ss(input);
-        int number;
-        while (ss >> number) {
-            arr.push_back(number);
+        int k;
+        string inputLine;
+
+        getline(cin, inputLine); // Read the array input as a line
+        stringstream ss(inputLine);
+        int value;
+        while (ss >> value) {
+            arr.push_back(value);
         }
+
+        cin >> k;
+        cin.ignore(); // Ignore newline character after k input
+
         Solution obj;
-        vector<int> res = obj.max_of_subarrays(k, arr);
+        vector<int> res = obj.maxOfSubarrays(arr, k);
         for (int i = 0; i < res.size(); i++)
             cout << res[i] << " ";
         cout << endl;
+        cout << "~"
+             << "\n";
     }
 
     return 0;
