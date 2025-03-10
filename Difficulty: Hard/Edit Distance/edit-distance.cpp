@@ -1,47 +1,51 @@
 //{ Driver Code Starts
+// Initial Template for C++
 #include <bits/stdc++.h>
 using namespace std;
 
 
 // } Driver Code Ends
+
 class Solution {
   public:
-    int ans(string &str1,string&str2,int n,int m,vector<vector<int>>&v)
-    {
-        if(n==-1)
-        return m+1;
-        if(m==-1)
-        return n+1;
-        if(v[n][m]!=INT_MAX)
-        return v[n][m];
-        if(str1[n]==str2[m])
-        {
-            return v[n][m]=min(v[n][m],ans(str1,str2,n-1,m-1,v));
+    // Function to compute the edit distance between two strings
+    int editDistance(string& s1, string& s2) {
+        int m = s1.length();
+        int n = s2.length();
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1));
+        for (int i = 0; i <= m; i++)
+            dp[i][0] = i;
+        for (int j = 0; j <= n; j++)
+            dp[0][j] = j;
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s1[i - 1] == s2[j - 1])
+                    dp[i][j] = dp[i - 1][j - 1];
+                else
+                    dp[i][j] = 1 + min({dp[i][j - 1], dp[i - 1][j], dp[i - 1][j - 1]});
+            }
         }
-        v[n][m]=min(v[n][m],1+ans(str1,str2,n-1,m-1,v));
-        v[n][m]=min(v[n][m],1+ans(str1,str2,n-1,m,v));
-        v[n][m]=min(v[n][m],1+ans(str1,str2,n,m-1,v));
-        return v[n][m];
-        
-    }
-    int editDistance(string str1, string str2) {
-        // Code here
-        int n=str1.length(),m=str2.length();
-        vector<vector<int>>v(n,vector<int>(m,INT_MAX));
-        return ans(str1,str2,n-1,m-1,v);
+        return dp[m][n];
     }
 };
 
+
 //{ Driver Code Starts.
+
 int main() {
+
     int T;
     cin >> T;
+    cin.ignore();
     while (T--) {
-        string s, t;
-        cin >> s >> t;
+        string s1;
+        getline(cin, s1);
+        string s2;
+        getline(cin, s2);
         Solution ob;
-        int ans = ob.editDistance(s, t);
+        int ans = ob.editDistance(s1, s2);
         cout << ans << "\n";
+        cout << "~" << endl;
     }
     return 0;
 }
