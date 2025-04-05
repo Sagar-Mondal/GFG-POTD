@@ -2,39 +2,57 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+
 // } Driver Code Ends
+
 class Solution {
   public:
-    void DFS(vector<vector<char>>& M, int r, int c) {
-        int ROW = M.size();
-        int COL = M[0].size();
-        if (r < 0 || c < 0 || r >= ROW || c >= COL || M[r][c] != '1') {
+    vector<int> dx = {-1, 0, 1, 0, 1, -1, -1, 1};
+    vector<int> dy = {0, -1, 0, 1, 1, 1, -1, -1};
+
+    void dfs(vector<vector<char>> &grid, int r, int c) {
+        int row = grid.size();
+        int col = grid[0].size();
+
+        // Base condition
+        // if r or c is out of bounds or grid[r][c] is not L
+        if (r < 0 || c < 0 || r >= row || c >= col || grid[r][c] != 'L') {
             return;
         }
-        M[r][c] = '0';
-        vector<int> rNbr = {1, -1, 0, 0, 1, -1, 1, -1};
-        vector<int> cNbr = {0, 0, 1, -1, 1, -1, -1, 1};
+
+        // Mark the cell as visited by setting it to W
+        grid[r][c] = 'W';
+
         for (int i = 0; i < 8; ++i) {
-            int newR = r + rNbr[i];
-            int newC = c + cNbr[i];
-            DFS(M, newR, newC);
+            int newR = r + dx[i];
+            int newC = c + dy[i];
+            dfs(grid, newR, newC);
         }
     }
-    int numIslands(vector<vector<char>>& grid) {
-        int ROW = grid.size();
-        int COL = grid[0].size();
+    int countIslands(vector<vector<char>> &grid) {
+        int row = grid.size();
+        int col = grid[0].size();
         int count = 0;
-        for (int r = 0; r < ROW; r++) {
-            for (int c = 0; c < COL; c++) {
-                if (grid[r][c] == '1') {
+
+        // Traverse the entire matrix
+        for (int r = 0; r < row; r++) {
+            for (int c = 0; c < col; c++) {
+
+                // If a cell with value L is found
+                if (grid[r][c] == 'L') {
+
+                    // Increment the island count
                     count++;
-                    DFS(grid, r, c);
+
+                    // Start DFS from the current cell
+                    dfs(grid, r, c);
                 }
             }
         }
         return count;
     }
 };
+
 
 //{ Driver Code Starts.
 int main() {
@@ -50,8 +68,11 @@ int main() {
             }
         }
         Solution obj;
-        int ans = obj.numIslands(grid);
+        int ans = obj.countIslands(grid);
         cout << ans << '\n';
+
+        cout << "~"
+             << "\n";
     }
     return 0;
 }
