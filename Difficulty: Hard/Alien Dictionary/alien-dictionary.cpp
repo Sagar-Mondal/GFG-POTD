@@ -1,117 +1,143 @@
 //{ Driver Code Starts
-// Initial Template for C++
-
 #include <bits/stdc++.h>
 using namespace std;
 
+
 // } Driver Code Ends
-// User function Template for C++
 
-class graph {
+class Solution {
   public:
-    int V;
-    list<int> *adj;
-    graph(int V) {
-        this->V = V;
-        adj = new list<int>[V];
+    string findOrder(vector<string>& words) {
+        vector<vector<int>> graph(26);
+
+        // In-degree of each character
+        vector<int> inDegree(26, 0);
+
+        // Tracks which characters are present
+        vector<bool> exists(26, false);
+
+        // Mark existing characters
+        for (const string& word : words) {
+            for (char ch : word) {
+                exists[ch - 'a'] = true;
+            }
+        }
+        // Build the graph from adjacent words
+        for (int i = 0; i + 1 < words.size(); ++i) {
+            const string& w1 = words[i];
+            const string& w2 = words[i + 1];
+            int len = min(w1.length(), w2.length());
+            int j = 0;
+
+            while (j < len && w1[j] == w2[j])
+                ++j;
+
+            if (j < len) {
+                int u = w1[j] - 'a';
+                int v = w2[j] - 'a';
+                graph[u].push_back(v);
+                inDegree[v]++;
+            } else if (w1.size() > w2.size()) {
+
+                // Invalid input
+                return "";
+            }
+        }
+        // Topological sort
+        queue<int> q;
+        for (int i = 0; i < 26; ++i) {
+            if (exists[i] && inDegree[i] == 0) {
+                q.push(i);
+            }
+        }
+
+        string result;
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            result += (char)(u + 'a');
+
+            for (int v : graph[u]) {
+                inDegree[v]--;
+                if (inDegree[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+
+        // Check, there was a cycle or not
+        for (int i = 0; i < 26; ++i) {
+            if (exists[i] && inDegree[i] != 0) {
+                return "";
+            }
+        }
+
+        return result;
     }
-    void addedge(int v, int u) { adj[v].push_back(u); }
 };
 
-class Solution{
-    public:
-    void dictorder(string str1, string str2, graph *g, int *exist) {
-        int n1 = str1.size();
-        int n2 = str2.size();
-        for (int i = 0; i < n1; i++) exist[(int)str1[i]] = 1;
-        for (int i = 0; i < n2; i++) exist[(int)str2[i]] = 1;
-        int i = 0;
-        while (i < n1 && i < n2) {
-            if (str1[i] != str2[i]) {
-                g->addedge((int)str1[i], (int)str2[i]);
-                return;
-            }
-            i++;
-        }
-    }
-    void topsort(list<int> *adj, bool *visited, stack<char> &st, int v,
-                 int *exist) {
-        if (exist[v]) {
-            visited[v] = true;
-            for (auto u : adj[v])
-                if (!visited[u]) topsort(adj, visited, st, u, exist);
-            st.push((char)v);
-        }
-    }
-    string findOrder(string dict[], int N, int K) {
-        graph *g = new graph(256);
-        int exist[256] = {0};
-        for (int i = 1; i < N; i++) {
-            dictorder(dict[i - 1], dict[i], g, exist);
-        }
-        bool visited[256] = {0};
-        stack<char> st;
-        for (int i = 0; i < 256; i++) {
-            if (!visited[i]) topsort(g->adj, visited, st, i, exist);
-        }
-        string final = "";
-        while (!st.empty()) {
-            final += st.top();
-            st.pop();
-        }
-        return final;
-    }
-};
 
 //{ Driver Code Starts.
-string order;
 
-bool f(string a, string b) {
-    int p1 = 0;
-    int p2 = 0;
-    for (int i = 0; i < min(a.size(), b.size()) and p1 == p2; i++) {
-        p1 = order.find(a[i]);
-        p2 = order.find(b[i]);
-        //	cout<<p1<<" "<<p2<<endl;
+bool validate(const vector<string> &original, const string &order) {
+    unordered_map<char, int> mp;
+    for (const string &word : original) {
+        for (const char &ch : word) {
+            mp[ch] = 1;
+        }
+    }
+    for (const char &ch : order) {
+        if (mp.find(ch) == mp.end())
+            return false;
+        mp.erase(ch);
+    }
+    if (!mp.empty())
+        return false;
+
+    for (int i = 0; i < order.size(); i++) {
+        mp[order[i]] = i;
     }
 
-    if (p1 == p2 and a.size() != b.size())
-        return a.size() < b.size();
-
-    return p1 < p2;
+    for (int i = 0; i < original.size() - 1; i++) {
+        const string &a = original[i];
+        const string &b = original[i + 1];
+        int k = 0, n = a.size(), m = b.size();
+        while (k < n and k < m and a[k] == b[k]) {
+            k++;
+        }
+        if (k < n and k < m and mp[a[k]] > mp[b[k]]) {
+            return false;
+        }
+        if (k != n and k == m) {
+            return false;
+        }
+    }
+    return true;
 }
 
-// Driver program to test above functions
 int main() {
-    int t;
-    cin >> t;
+    string str;
+    getline(cin, str);
+    int t = stoi(str);
     while (t--) {
-        int N, K;
-        cin >> N >> K;
-        string dict[N];
-        for (int i = 0; i < N; i++)
-            cin >> dict[i];
+        getline(cin, str);
+        stringstream ss(str);
+        string curr;
+        vector<string> words;
+        while (ss >> curr)
+            words.push_back(curr);
 
-        Solution obj;
-        string ans = obj.findOrder(dict, N, K);
-        order = "";
-        for (int i = 0; i < ans.size(); i++)
-            order += ans[i];
+        vector<string> original = words;
 
-        string temp[N];
-        std::copy(dict, dict + N, temp);
-        sort(temp, temp + N, f);
+        Solution ob;
+        string order = ob.findOrder(words);
 
-        bool f = true;
-        for (int i = 0; i < N; i++)
-            if (dict[i] != temp[i])
-                f = false;
-
-        if (f)
-            cout << 1;
-        else
-            cout << 0;
-        cout << endl;
+        if (order.empty()) {
+            cout << "\"\"" << endl;
+        } else {
+            cout << (validate(original, order) ? "true" : "false") << endl;
+        }
+        cout << "~" << endl;
     }
     return 0;
 }
